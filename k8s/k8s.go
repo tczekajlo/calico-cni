@@ -10,9 +10,9 @@ import (
 	"github.com/containernetworking/cni/pkg/ipam"
 	"github.com/containernetworking/cni/pkg/skel"
 	"github.com/containernetworking/cni/pkg/types"
-	"github.com/projectcalico/calico-cni/utils"
 	"github.com/projectcalico/libcalico-go/lib/api"
 	cnet "github.com/projectcalico/libcalico-go/lib/net"
+	"github.com/tczekajlo/calico-cni/utils"
 
 	"encoding/json"
 

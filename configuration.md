@@ -50,6 +50,7 @@ The following deprecated options are also supported
 When using Calico IPAM, the following flags determine what IP addresses should be assigned. NOTE: These flags are strings and not boolean values.
 * `assign_ipv4` (default `"true"`)
 * `assign_ipv6` (default `"false"`)
+* `pool` (default `None`) - If specified, the previously configured IPv4 pool from which to assign IPv4 addresses.  If not specified, this defaults to all IPv4 pools
 
 A specific IP address can be chosen by using [`CNI_ARGS`](https://github.com/appc/cni/blob/master/SPEC.md#parameters) and setting `IP` to the desired value.
 
@@ -65,7 +66,8 @@ When using the Calico CNI plugin with Kubernetes, the plugin must be able to acc
         "kubeconfig": "/path/to/kubeconfig"
     },
     "ipam": {
-        "type": "calico-ipam"
+        "type": "calico-ipam",
+        "pool": "192.168.1.0/24"
     }
 }
 ```

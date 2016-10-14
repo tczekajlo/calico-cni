@@ -11,13 +11,14 @@ import (
 
 	"github.com/containernetworking/cni/pkg/skel"
 	"github.com/containernetworking/cni/pkg/types"
-	"github.com/projectcalico/calico-cni/utils"
+	"github.com/containernetworking/cni/pkg/version"
 	"github.com/projectcalico/libcalico-go/lib/client"
 	cnet "github.com/projectcalico/libcalico-go/lib/net"
+	"github.com/tczekajlo/calico-cni/utils"
 )
 
 func main() {
-	skel.PluginMain(cmdAdd, cmdDel)
+	skel.PluginMain(cmdAdd, cmdDel, version.Legacy)
 }
 
 type ipamArgs struct {
@@ -80,6 +81,17 @@ func cmdAdd(args *skel.CmdArgs) error {
 		fmt.Fprintf(os.Stderr, "Calico CNI IPAM request count IPv4=%d IPv6=%d\n", num4, num6)
 
 		assignArgs := client.AutoAssignArgs{Num4: num4, Num6: num6, HandleID: &workloadID, Hostname: conf.Hostname}
+
+		if conf.IPAM.Pool != "" {
+			_, pool, err := cnet.ParseCIDR(conf.IPAM.Pool)
+			if err != nil {
+				fmt.Fprintf(os.Stderr, "Calico CNI IPAM cannot parse pool CIDR, pool=%v\n", conf.IPAM.Pool)
+			} else {
+				assignArgs.IPv4Pool = pool
+				fmt.Fprintf(os.Stderr, "Calico CNI IPAM use pool=%v\n", conf.IPAM.Pool)
+			}
+		}
+
 		logger.WithField("assignArgs", assignArgs).Info("Auto assigning IP")
 		assignedV4, assignedV6, err := calicoClient.IPAM().AutoAssign(assignArgs)
 		fmt.Fprintf(os.Stderr, "Calico CNI IPAM assigned addresses IPv4=%v IPv6=%v\n", assignedV4, assignedV6)
